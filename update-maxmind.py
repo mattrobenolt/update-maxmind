@@ -4,8 +4,13 @@ import sys
 import urllib2
 import datetime
 import subprocess
+import gzip
 from os.path import join, getmtime
 from optparse import OptionParser
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import StringIO
 
 # blah blah blah
 __version__ = "0.1.0"
@@ -62,7 +67,9 @@ def main(install_dir):
             print now_str()+"Downloading new version..."
             
             try:
-                uncompressed = urllib2.urlopen(url).read()
+                uncompressed = StringIO.StringIO()
+                uncompressed.write(urllib2.urlopen(url).read())
+                uncompressed.seek(0)
             except urllib2.URLError:
                 print now_str()+"Can't download the file. Skipping. :("
                 continue
@@ -70,8 +77,7 @@ def main(install_dir):
             print now_str()+"Download complete."
             try:
                 print now_str()+"Unpacking..."
-                p = subprocess.Popen(["gunzip", "-f", "-c"], shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-                output = p.communicate(input=uncompressed)[0]
+                g = gzip.GzipFile(filename="", mode="rb", fileobj=uncompressed)
             except:
                 print now_str()+"Error uncompressing data."
                 continue
@@ -79,12 +85,17 @@ def main(install_dir):
             try:
                 print now_str()+"Saving..."
                 fp = open(dat_path, 'wb')
-                fp.write(output)
+                while True:
+                    chunk = g.read(1024)
+                    if not chunk:
+                        break
+                    fp.write(chunk)
             except IOError:
                 print now_str()+"Error saving file. :("
                 continue
             finally:
                 try:
+                    g.close()
                     fp.close()
                 except:
                     pass

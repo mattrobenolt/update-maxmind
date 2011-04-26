@@ -26,8 +26,8 @@ def now_str():
 
 def main(install_dir):
     for url in (GEOIP_COUNTRY, GEOIP_CITY):
-        dat_name = url.split('/')[-1]
-        dat_name = dat_name.rstrip('.gz')
+        dat_name = url.split("/")[-1]
+        dat_name = dat_name.rstrip(".gz")
         dat_path = join(install_dir, dat_name)
         
         download = False # flag to determine if we need to download a new version or not
@@ -70,7 +70,7 @@ def main(install_dir):
             print now_str()+"Download complete."
             try:
                 print now_str()+"Unpacking..."
-                p = subprocess.Popen(['gunzip', '-f', '-c'], shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+                p = subprocess.Popen(["gunzip", "-f", "-c"], shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
                 output = p.communicate(input=uncompressed)[0]
             except:
                 print now_str()+"Error uncompressing data."
@@ -94,7 +94,7 @@ def main(install_dir):
         else:
             print now_str()+"We have the latest version of %s, skipping." % dat_name
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = OptionParser(usage="%prog DIRECTORY", version=__version__)
     (opts, args) = parser.parse_args()
     

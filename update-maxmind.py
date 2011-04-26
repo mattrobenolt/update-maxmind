@@ -3,7 +3,6 @@
 import sys
 import urllib2
 import datetime
-import subprocess
 import gzip
 from os.path import join, getmtime
 from optparse import OptionParser
